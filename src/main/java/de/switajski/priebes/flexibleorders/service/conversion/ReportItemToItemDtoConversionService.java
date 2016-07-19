@@ -45,7 +45,8 @@ public class ReportItemToItemDtoConversionService {
     public ItemDto convert(ReportItem ri, int toBeProcessed) {
         ItemDto item = new ItemDto();
         item.setQuantity(toBeProcessed);
-        item.setQuantityLeft(toBeProcessed);
+        item.setEvent(ri.getReport().getClass().getSimpleName());
+        if (ri.getPredecessor() != null) item.setPredecessor(ri.getPredecessor().getId());
         item.setDocumentNumber(ri.getReport().getDocumentNumber());
         if (ri.getReport() instanceof OrderConfirmation) {
             item.setOrderConfirmationNumber(ri.getReport().getDocumentNumber());

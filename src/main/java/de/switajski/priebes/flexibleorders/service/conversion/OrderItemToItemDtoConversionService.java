@@ -18,6 +18,7 @@ public class OrderItemToItemDtoConversionService {
     public ItemDto convert(OrderItem orderItem) {
         ItemDto item = new ItemDto();
         Order order = orderItem.getOrder();
+        item.setEvent(orderItem.getClass().getSimpleName());
         item.setDocumentNumber(order.getOrderNumber());
         if (order != null) {
             item.setCustomer(order.getCustomer().getId());

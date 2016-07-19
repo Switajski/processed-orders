@@ -9,6 +9,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.NumberDeserializers.BigDecimalDeserializer;
@@ -33,6 +34,7 @@ public class ItemDto {
 
     private Long id;
 
+    private Long predecessor;
     @JsonSerialize(using = JsonDateSerializer.class)
     @JsonDeserialize(using = JsonDateDeserializer.class)
     private Date created;
@@ -44,27 +46,23 @@ public class ItemDto {
     @JsonDeserialize(using = EmptyStringStripToNullDeserializer.class)
     private String productName,
             customerName,
-            orderNumber,
             documentNumber,
-            invoiceNumber,
+            event,
+            additionalInfo;
+
+    @JsonIgnore
+    private String trackNumber,
             receiptNumber,
+            paymentConditions,
+            packageNumber,
             deliveryNotesNumber,
             orderConfirmationNumber,
             orderAgreementNumber,
-            trackNumber,
-            packageNumber,
-            paymentConditions,
-            additionalInfo;
-
-    public String getAdditionalInfo() {
-        return additionalInfo;
-    }
-
-    public void setAdditionalInfo(String additionalInfo) {
-        this.additionalInfo = additionalInfo;
-    }
+            orderNumber,
+            invoiceNumber;
 
     private Integer quantity;
+    @JsonIgnore
     @Min(1)
     private Integer quantityLeft;
 
@@ -76,16 +74,20 @@ public class ItemDto {
     @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal priceNet;
 
+    @JsonIgnore
     private boolean shareHistory;
 
+    @JsonIgnore
     private String status;
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate expectedDelivery;
 
+    @JsonIgnore
     private boolean agreed = true;
 
+    @JsonIgnore
     private boolean pending = false;
 
     /**
@@ -94,6 +96,30 @@ public class ItemDto {
      * item should be delivered nevertheless.
      */
     private boolean offTheRecord = false;
+
+    public String getEvent() {
+        return event;
+    }
+
+    public void setEvent(String event) {
+        this.event = event;
+    }
+
+    public Long getPredecessor() {
+        return predecessor;
+    }
+
+    public void setPredecessor(Long predecessor) {
+        this.predecessor = predecessor;
+    }
+
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
 
     public boolean isOffTheRecord() {
         return offTheRecord;

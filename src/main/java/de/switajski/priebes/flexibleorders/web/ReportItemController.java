@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,9 +30,11 @@ import de.switajski.priebes.flexibleorders.domain.report.ReportItem;
 import de.switajski.priebes.flexibleorders.exceptions.NotFoundException;
 import de.switajski.priebes.flexibleorders.json.JsonObjectResponse;
 import de.switajski.priebes.flexibleorders.repository.CustomerRepository;
+import de.switajski.priebes.flexibleorders.repository.OrderRepository;
 import de.switajski.priebes.flexibleorders.repository.ReportRepository;
 import de.switajski.priebes.flexibleorders.repository.specification.HasCustomerSpecification;
 import de.switajski.priebes.flexibleorders.service.ReportingService;
+import de.switajski.priebes.flexibleorders.service.conversion.OrderItemToItemDtoConversionService;
 import de.switajski.priebes.flexibleorders.service.conversion.ReportItemToItemDtoConversionService;
 import de.switajski.priebes.flexibleorders.service.helper.StatusFilterDispatcher;
 import de.switajski.priebes.flexibleorders.web.dto.ItemDto;
@@ -62,6 +65,30 @@ public class ReportItemController extends ExceptionController {
     private ReportRepository reportRepository;
     @Autowired
     private ReportItemToItemDtoConversionService ri2DtoConversionService;
+    @Autowired
+    private OrderRepository orderRepo;
+    @Autowired
+    private OrderItemToItemDtoConversionService oi2ItemDtoConversionService;
+
+    @RequestMapping(value = "/allOrdered", method = RequestMethod.GET)
+    public @ResponseBody Object listAllOrders() {
+        Set<ItemDto> orders = orderRepo.findAll()
+                .stream()
+                .map(o -> oi2ItemDtoConversionService.convert(o))
+                .flatMap(o -> o.stream())
+                .collect(Collectors.toSet());
+        return orders;
+    }
+
+    @RequestMapping(value = "/allProcessed", method = RequestMethod.GET)
+    public @ResponseBody Object listAllConfirmed() {
+        Set<ItemDto> orders = reportRepository.findAll()
+                .stream()
+                .map(o -> ri2DtoConversionService.convert(o.getItems()))
+                .flatMap(o -> o.stream())
+                .collect(Collectors.toSet());
+        return orders;
+    }
 
     @RequestMapping(value = "/ordered", method = RequestMethod.GET)
     public @ResponseBody JsonObjectResponse listAllToBeConfirmed(
@@ -70,7 +97,7 @@ public class ReportItemController extends ExceptionController {
             @RequestParam(value = "limit", required = true) Integer limit,
             @RequestParam(value = "sort", required = false) String sorts,
             @RequestParam(value = "filter", required = false) String filters)
-                    throws Exception {
+            throws Exception {
 
         Customer customer = null;
         PageRequest pageable = new PageRequest((page - 1), limit);
@@ -101,7 +128,7 @@ public class ReportItemController extends ExceptionController {
             @RequestParam(value = "limit", required = true) Integer limit,
             @RequestParam(value = "sort", required = false) String sorts,
             @RequestParam(value = "filter", required = true) String filters)
-                    throws Exception {
+            throws Exception {
 
         PageRequest pageable = new PageRequest((page - 1), limit);
         HashMap<String, String> filterMap = JsonSerializationHelper
@@ -185,7 +212,7 @@ public class ReportItemController extends ExceptionController {
             @RequestParam(value = "limit", required = true) Integer limit,
             @RequestParam(value = "sort", required = false) String sorts,
             @RequestParam(value = "filter", required = false) String filters)
-                    throws Exception {
+            throws Exception {
 
         throw new RuntimeException("Not implemented yet");
     }
