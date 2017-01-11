@@ -19,10 +19,10 @@ public final class PredecessorIdSerializer
 
     @Override
     public void serialize(ReportItem value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
-        gen.writeStartObject();
-        gen.writeStringField("documentNo", value.getReport().getDocumentNumber());
-        gen.writeStringField("position", value.getPosition().toString());
-        gen.writeEndObject();
+        long id;
+        if (value.getPredecessor() != null) id = value.getPredecessor().getId();
+        else id = value.getOrderItem().getId();
+        gen.writeNumber(id);
     }
 
 }

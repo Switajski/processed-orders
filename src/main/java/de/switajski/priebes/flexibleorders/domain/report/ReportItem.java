@@ -15,18 +15,17 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.switajski.priebes.flexibleorders.domain.Customer;
 import de.switajski.priebes.flexibleorders.domain.GenericEntity;
 import de.switajski.priebes.flexibleorders.domain.OrderItem;
-import de.switajski.priebes.flexibleorders.json.OrderItemIdSerializer;
-import de.switajski.priebes.flexibleorders.json.PredecessorIdSerializer;
 import de.switajski.priebes.flexibleorders.repository.specification.OverdueItemSpecification;
 import de.switajski.priebes.flexibleorders.web.helper.LanguageTranslator;
 
@@ -37,9 +36,23 @@ import de.switajski.priebes.flexibleorders.web.helper.LanguageTranslator;
 public abstract class ReportItem extends GenericEntity implements
         Comparable<ReportItem> {
 
-    @JsonSerialize(using = PredecessorIdSerializer.class)
+    @JsonIgnore
     @OneToOne(optional = true)
     private ReportItem predecessor;
+
+    @JsonProperty("predecessor")
+    @Transient
+    private Long predecessorId;
+
+    public Long getPredecessorId() {
+        if (predecessor != null) return predecessor.getId();
+        else return orderItem.getId();
+    }
+
+    @JsonProperty("_id")
+    public Long getIdForCouchDB() {
+        return super.getId();
+    }
 
     private Integer position;
 
@@ -62,7 +75,7 @@ public abstract class ReportItem extends GenericEntity implements
 
     @NotNull
     @ManyToOne
-    @JsonSerialize(using = OrderItemIdSerializer.class)
+    @JsonIgnore
     private OrderItem orderItem;
 
     protected ReportItem() {}
@@ -127,6 +140,7 @@ public abstract class ReportItem extends GenericEntity implements
         else return -1;
     }
 
+    @JsonIgnore
     public abstract String provideStatus();
 
     @Override

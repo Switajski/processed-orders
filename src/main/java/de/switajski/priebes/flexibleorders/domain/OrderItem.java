@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.switajski.priebes.flexibleorders.domain.embeddable.Amount;
@@ -235,6 +236,11 @@ public class OrderItem extends GenericEntity {
 
     public Integer getPosition() {
         return this.position;
+    }
+
+    @JsonProperty("_id")
+    public Long getIdForCouchDb() {
+        return super.getId();
     }
 
 }

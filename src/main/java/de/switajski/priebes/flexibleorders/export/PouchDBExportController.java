@@ -47,7 +47,7 @@ public class PouchDBExportController {
         restTemplate.setInterceptors(Arrays.asList(new LoggingRequestInterceptor()));
         restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
 
-        String destination = "http://localhost:5984/fo4";
+        String destination = "http://localhost:5984/fo5";
         for (Order order : allOrders) {
             ResponseEntity<Order> response = restTemplate.postForEntity(
                     destination,
