@@ -21,9 +21,12 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 public class JsonDateSerializer extends JsonSerializer<Date> {
 
     @Override
-    public void serialize(Date date, JsonGenerator gen,
+    public void serialize(
+            Date date,
+            JsonGenerator gen,
             SerializerProvider provider)
-            throws IOException, JsonProcessingException {
+            throws IOException,
+            JsonProcessingException {
 
         String formattedDate = JsonFormatterConstants.DATE_FORMAT.format(date);
 

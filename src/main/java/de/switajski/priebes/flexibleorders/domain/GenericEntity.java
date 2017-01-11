@@ -17,6 +17,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -28,6 +29,7 @@ import de.switajski.priebes.flexibleorders.json.JsonDateSerializer;
 public abstract class GenericEntity {
 
     @Id
+    @JsonIgnore
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Long id;
@@ -41,6 +43,15 @@ public abstract class GenericEntity {
     @Version
     @Column(name = "version")
     private Integer version;
+
+    /**
+     * for json serialization purposes
+     * 
+     * @return
+     */
+    public String getType() {
+        return this.getClass().getSimpleName();
+    }
 
     public Long getId() {
         return this.id;

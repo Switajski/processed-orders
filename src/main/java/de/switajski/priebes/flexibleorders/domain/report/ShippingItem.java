@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import de.switajski.priebes.flexibleorders.domain.OrderItem;
 
 @Entity
@@ -30,6 +32,7 @@ public class ShippingItem extends ReportItem {
         return "geliefert";
     }
 
+    @JsonIgnore
     public DeliveryNotes getDeliveryNotes() {
         return (DeliveryNotes) this.report;
     }

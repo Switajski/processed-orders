@@ -13,13 +13,18 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.switajski.priebes.flexibleorders.domain.embeddable.PurchaseAgreement;
 import de.switajski.priebes.flexibleorders.reference.OriginSystem;
 
 @Entity
 @Table(name = "c_order")
+@JsonAutoDetect
+@JsonPropertyOrder({ "_id", "created", "type" })
 public class Order extends GenericEntity {
 
     @Transient
@@ -28,6 +33,7 @@ public class Order extends GenericEntity {
     /**
      * natural id
      */
+    @JsonProperty("_id")
     @NotNull
     @Column(unique = true)
     private String orderNumber;
@@ -45,7 +51,6 @@ public class Order extends GenericEntity {
 
     private OriginSystem originSystem;
 
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "customerOrder")
     private Set<OrderItem> items = new HashSet<OrderItem>();
 
@@ -122,6 +127,7 @@ public class Order extends GenericEntity {
         if (item.getOrder() == null) item.setOrder(this);
         else if (!item.getOrder().equals(this)) throw new IllegalArgumentException("Item has already other order set");
         this.items.add(item);
+        item.setPosition(nextPosition());
     }
 
     public Double getVatRate() {
@@ -145,6 +151,14 @@ public class Order extends GenericEntity {
 
     public void setPurchaseAgreement(PurchaseAgreement purchaseAgreement) {
         this.puchaseAgreement = purchaseAgreement;
+    }
+
+    public OrderItem getItem(int bpPos) {
+        return getItems().stream().filter(oi -> oi.getPosition() == bpPos).findFirst().get();
+    }
+
+    public int nextPosition() {
+        return items.size() + 1;
     }
 
 }

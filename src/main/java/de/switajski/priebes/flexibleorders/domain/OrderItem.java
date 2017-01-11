@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.switajski.priebes.flexibleorders.domain.embeddable.Amount;
 import de.switajski.priebes.flexibleorders.domain.report.ConfirmationItem;
@@ -24,6 +25,7 @@ import de.switajski.priebes.flexibleorders.web.dto.ItemDto;
 
 @Entity
 @JsonAutoDetect
+@JsonPropertyOrder({ "position", "created", "type" })
 public class OrderItem extends GenericEntity {
 
     @JsonIgnore
@@ -39,6 +41,9 @@ public class OrderItem extends GenericEntity {
     @NotNull
     @Embedded
     private Product product;
+
+    @NotNull
+    private Integer position;
 
     private String packageNumber;
 
@@ -64,10 +69,11 @@ public class OrderItem extends GenericEntity {
         this.reportItems = new HashSet<ReportItem>();
         this.customerOrder = order;
         this.orderedQuantity = orderedQuantity;
+        this.position = order.nextPosition();
         setProduct(product);
 
         // handle birectional relationship
-        if (order != null && !order.getItems().contains(this)) order.getItems().add(this);
+        order.addOrderItem(this);
     }
 
     public void copyValuesFrom(ItemDto newItem) {
@@ -80,6 +86,10 @@ public class OrderItem extends GenericEntity {
 
     public OrderItem(ItemDto newItem) {
         copyValuesFrom(newItem);
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 
     @Override
@@ -129,6 +139,7 @@ public class OrderItem extends GenericEntity {
         this.orderedQuantity = orderedQuantity;
     }
 
+    @JsonIgnore
     public Order getOrder() {
         return customerOrder;
     }
@@ -182,16 +193,19 @@ public class OrderItem extends GenericEntity {
         handlingEvent.setOrderItem(null);
     }
 
+    @JsonIgnore
     public Report getReport(String invoiceNo) {
         for (ReportItem he : getReportItems())
             if (he.getReport().getDocumentNumber().equals(invoiceNo)) return he.getReport();
         return null;
     }
 
+    @JsonIgnore
     public Set<ConfirmationItem> getConfirmationItems() {
         return getReportItems(ConfirmationItem.class);
     }
 
+    @JsonIgnore
     public Set<ShippingItem> getShippingItems() {
         return getReportItems(ShippingItem.class);
     }
@@ -217,6 +231,10 @@ public class OrderItem extends GenericEntity {
 
     public void setAdditionalInfo(String additionalInfo) {
         this.additionalInfo = additionalInfo;
+    }
+
+    public Integer getPosition() {
+        return this.position;
     }
 
 }

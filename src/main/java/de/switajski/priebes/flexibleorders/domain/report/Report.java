@@ -18,7 +18,10 @@ import javax.persistence.PreRemove;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 import de.switajski.priebes.flexibleorders.domain.Customer;
 import de.switajski.priebes.flexibleorders.domain.GenericEntity;
@@ -26,8 +29,10 @@ import de.switajski.priebes.flexibleorders.domain.Order;
 import de.switajski.priebes.flexibleorders.domain.Product;
 import de.switajski.priebes.flexibleorders.itextpdf.builder.Unicode;
 
+@JsonAutoDetect
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Entity
+@JsonPropertyOrder({ "_id", "created", "type", "typeExtends" })
 public abstract class Report extends GenericEntity {
 
     @Transient
@@ -36,11 +41,11 @@ public abstract class Report extends GenericEntity {
     /**
      * Natural id of a Report.
      */
+    @JsonProperty("_id")
     @NotNull
     @Column(unique = true)
     private String documentNumber;
 
-    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "report")
     protected Set<ReportItem> items = new HashSet<ReportItem>();
 
@@ -50,11 +55,14 @@ public abstract class Report extends GenericEntity {
         this.documentNumber = documentNumber;
     }
 
+    public String getTypeExtends() {
+        return Report.class.getSimpleName();
+    }
+
     public String getDocumentNumber() {
         return documentNumber;
     }
 
-    @JsonIgnore
     public Set<ReportItem> getItems() {
         return items;
     }
@@ -95,6 +103,7 @@ public abstract class Report extends GenericEntity {
         if (items.contains(item)) return;
         items.add(item);
         item.setReport(this);
+        item.setPosition(nextPosition());
     }
 
     public void removeItem(ReportItem item) {
@@ -153,6 +162,10 @@ public abstract class Report extends GenericEntity {
             }
         }
         return Collections.unmodifiableSet(ris);
+    }
+
+    public Integer nextPosition() {
+        return items.size() + 1;
     }
 
 }

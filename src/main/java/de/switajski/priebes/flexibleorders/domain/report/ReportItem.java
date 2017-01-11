@@ -17,38 +17,52 @@ import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.switajski.priebes.flexibleorders.domain.Customer;
 import de.switajski.priebes.flexibleorders.domain.GenericEntity;
 import de.switajski.priebes.flexibleorders.domain.OrderItem;
+import de.switajski.priebes.flexibleorders.json.OrderItemIdSerializer;
+import de.switajski.priebes.flexibleorders.json.PredecessorIdSerializer;
 import de.switajski.priebes.flexibleorders.repository.specification.OverdueItemSpecification;
 import de.switajski.priebes.flexibleorders.web.helper.LanguageTranslator;
 
+@JsonAutoDetect
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Entity
+@JsonPropertyOrder({ "position", "created", "type", "quantitiy" })
 public abstract class ReportItem extends GenericEntity implements
         Comparable<ReportItem> {
 
+    @JsonSerialize(using = PredecessorIdSerializer.class)
     @OneToOne(optional = true)
     private ReportItem predecessor;
+
+    private Integer position;
 
     /**
      * performance improvement by caching overdue in database
      */
+    @JsonIgnore
     private Integer overdue;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "predecessor")
     private Set<ReportItem> successors;
 
     @NotNull
     private Integer quantity;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.EAGER)
     protected Report report;
 
     @NotNull
     @ManyToOne
+    @JsonSerialize(using = OrderItemIdSerializer.class)
     private OrderItem orderItem;
 
     protected ReportItem() {}
@@ -66,6 +80,14 @@ public abstract class ReportItem extends GenericEntity implements
             if (report.getItems().contains(this)) return;
             report.addItem(this);
         }
+    }
+
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
     }
 
     public int getQuantity() {
@@ -86,7 +108,6 @@ public abstract class ReportItem extends GenericEntity implements
         report.addItem(this);
     }
 
-    @JsonIgnore
     public OrderItem getOrderItem() {
         return orderItem;
     }
