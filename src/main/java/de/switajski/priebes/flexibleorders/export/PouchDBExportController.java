@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import de.switajski.priebes.flexibleorders.domain.Order;
 import de.switajski.priebes.flexibleorders.domain.report.Report;
 import de.switajski.priebes.flexibleorders.repository.OrderRepository;
@@ -41,13 +44,28 @@ public class PouchDBExportController {
         }
     }
 
+    @RequestMapping(value = "/documents", method = RequestMethod.GET)
+    public @ResponseBody Object openReports() {
+        StringBuilder strb = new StringBuilder();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            strb.append(mapper.writeValueAsString(orderRepo.findAll()));
+            strb.append(mapper.writeValueAsString(reportRepo.findAll()));
+            return strb.toString();
+        }
+        catch (HttpClientErrorException | JsonProcessingException httpExc) {
+            strb.append(httpExc.getMessage());
+            return httpExc.toString() + " <br/>" + httpExc.getMessage() + "<br/>log:<br/>" + strb.toString();
+        }
+    }
+
     private Object exportViaPostToPouchDb(List<Order> allOrders) {
         StringBuilder strb = new StringBuilder();
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setInterceptors(Arrays.asList(new LoggingRequestInterceptor()));
         restTemplate.setRequestFactory(new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()));
 
-        String destination = "http://localhost:5984/fo5";
+        String destination = "http://localhost:5984/fo6";
         for (Order order : allOrders) {
             ResponseEntity<Order> response = restTemplate.postForEntity(
                     destination,

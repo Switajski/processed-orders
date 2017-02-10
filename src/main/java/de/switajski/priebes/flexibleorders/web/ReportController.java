@@ -28,8 +28,6 @@ public class ReportController {
     @Autowired
     private ReportRepository reportRepository;
 
-    @Autowired
-
     @RequestMapping(value = "/report", method = RequestMethod.GET)
     public @ResponseBody Object listAll() {
         List<Report> reports = reportRepository.findAll();

@@ -22,10 +22,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import de.switajski.priebes.flexibleorders.domain.Customer;
 import de.switajski.priebes.flexibleorders.domain.GenericEntity;
 import de.switajski.priebes.flexibleorders.domain.OrderItem;
+import de.switajski.priebes.flexibleorders.json.OrderItemIdSerializer;
 import de.switajski.priebes.flexibleorders.repository.specification.OverdueItemSpecification;
 import de.switajski.priebes.flexibleorders.web.helper.LanguageTranslator;
 
@@ -75,7 +77,8 @@ public abstract class ReportItem extends GenericEntity implements
 
     @NotNull
     @ManyToOne
-    @JsonIgnore
+    @JsonSerialize(using = OrderItemIdSerializer.class)
+    @JsonProperty("rootLineItem")
     private OrderItem orderItem;
 
     protected ReportItem() {}
