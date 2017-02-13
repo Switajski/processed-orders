@@ -165,7 +165,7 @@ public abstract class Report extends GenericEntity {
     }
 
     public Integer nextPosition() {
-        return items.size() + 1;
+        return items.size();
     }
 
 }

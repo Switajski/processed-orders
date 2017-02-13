@@ -1,5 +1,6 @@
 package de.switajski.priebes.flexibleorders.export;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,8 +50,9 @@ public class PouchDBExportController {
         StringBuilder strb = new StringBuilder();
         ObjectMapper mapper = new ObjectMapper();
         try {
-            strb.append(mapper.writeValueAsString(orderRepo.findAll()));
-            strb.append(mapper.writeValueAsString(reportRepo.findAll()));
+            ArrayList allDocs = new ArrayList(orderRepo.findAll());
+            allDocs.addAll(reportRepo.findAll());
+            strb.append(mapper.writeValueAsString(allDocs));
             return strb.toString();
         }
         catch (HttpClientErrorException | JsonProcessingException httpExc) {

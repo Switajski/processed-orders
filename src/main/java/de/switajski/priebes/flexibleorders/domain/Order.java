@@ -158,7 +158,7 @@ public class Order extends GenericEntity {
     }
 
     public int nextPosition() {
-        return items.size() + 1;
+        return items.size();
     }
 
 }

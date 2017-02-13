@@ -35,6 +35,7 @@ public class OrderItem extends GenericEntity {
     private Set<ReportItem> reportItems = new HashSet<ReportItem>();
 
     @NotNull
+    @JsonProperty("quantity")
     private Integer orderedQuantity;
 
     private Amount negotiatedPriceNet;
