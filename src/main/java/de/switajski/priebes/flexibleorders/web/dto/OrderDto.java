@@ -10,7 +10,7 @@ import de.switajski.priebes.flexibleorders.domain.OrderItem;
 @JsonAutoDetect
 public class OrderDto {
 
-    private String _id;
+    private String id;
 
     private Long customer;
 
@@ -18,12 +18,12 @@ public class OrderDto {
 
     private Double vatRate;
 
-    public String get_id() {
-        return _id;
+    public String getId() {
+        return id;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Long getCustomer() {

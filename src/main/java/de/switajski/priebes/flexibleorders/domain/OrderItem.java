@@ -239,7 +239,7 @@ public class OrderItem extends GenericEntity {
         return this.position;
     }
 
-    @JsonProperty("_id")
+    @JsonProperty("id")
     public Long getIdForCouchDb() {
         return super.getId();
     }

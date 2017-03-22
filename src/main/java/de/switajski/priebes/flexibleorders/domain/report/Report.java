@@ -32,7 +32,7 @@ import de.switajski.priebes.flexibleorders.itextpdf.builder.Unicode;
 @JsonAutoDetect
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Entity
-@JsonPropertyOrder({ "_id", "created", "type", "typeExtends" })
+@JsonPropertyOrder({ "id", "created", "type", "typeExtends" })
 public abstract class Report extends GenericEntity {
 
     @Transient
@@ -41,7 +41,7 @@ public abstract class Report extends GenericEntity {
     /**
      * Natural id of a Report.
      */
-    @JsonProperty("_id")
+    @JsonProperty("id")
     @NotNull
     @Column(unique = true)
     private String documentNumber;

@@ -24,7 +24,7 @@ import de.switajski.priebes.flexibleorders.reference.OriginSystem;
 @Entity
 @Table(name = "c_order")
 @JsonAutoDetect
-@JsonPropertyOrder({ "_id", "created", "type" })
+@JsonPropertyOrder({ "id", "created", "type" })
 public class Order extends GenericEntity {
 
     @Transient
@@ -33,7 +33,7 @@ public class Order extends GenericEntity {
     /**
      * natural id
      */
-    @JsonProperty("_id")
+    @JsonProperty("id")
     @NotNull
     @Column(unique = true)
     private String orderNumber;

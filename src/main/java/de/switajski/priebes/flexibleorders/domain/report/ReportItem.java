@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.switajski.priebes.flexibleorders.domain.Customer;
 import de.switajski.priebes.flexibleorders.domain.GenericEntity;
 import de.switajski.priebes.flexibleorders.domain.OrderItem;
+import de.switajski.priebes.flexibleorders.domain.Product;
 import de.switajski.priebes.flexibleorders.json.OrderItemIdSerializer;
 import de.switajski.priebes.flexibleorders.repository.specification.OverdueItemSpecification;
 import de.switajski.priebes.flexibleorders.web.helper.LanguageTranslator;
@@ -51,7 +52,7 @@ public abstract class ReportItem extends GenericEntity implements
         else return orderItem.getId();
     }
 
-    @JsonProperty("_id")
+    @JsonProperty("id")
     public Long getIdForCouchDB() {
         return super.getId();
     }
@@ -150,6 +151,10 @@ public abstract class ReportItem extends GenericEntity implements
     public String toString() {
         return new StringBuilder("#" + getId() + " " + this.getClass().getSimpleName())
                 .append(": ").append(" ").append(getQuantity()).append(" ").append(getOrderItem()).toString();
+    }
+
+    public Product getProduct() {
+        return orderItem.getProduct();
     }
 
     /**

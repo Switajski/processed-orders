@@ -33,15 +33,6 @@ import de.switajski.priebes.flexibleorders.reference.ProductType;
 public class ItemDto {
 
     private Long id;
-    private Long _id;
-
-    public Long get_id() {
-        return _id;
-    }
-
-    public void set_id(Long _id) {
-        this._id = _id;
-    }
 
     private Long predecessor;
     @JsonSerialize(using = JsonDateSerializer.class)
@@ -165,7 +156,6 @@ public class ItemDto {
     }
 
     public void setId(Long id) {
-        this._id = id;
         this.id = id;
     }
 
